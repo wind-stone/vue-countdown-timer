@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script src="https://vuejs.org/js/vue.js"></script>
+        <script id="template" type="x-template">
+            <div>
+                <div class="name">优化后的 CountDown</div>
+                <VueCountdownTimer
+                    ref="cxlCountdown"
+                    :time="3600000"
+                    :interval="1000"
+                    :emit-events="events"
+                    :format="transform"
+                    :enableVisibilityHiddenFix="true"
+                    @start="consoleEvent('start', $event)"
+                    @count="consoleEvent('count', $event)"
+                    @pause="consoleEvent('pause', $event)"
+                    @continue="consoleEvent('continue', $event)"
+                    @end="consoleEvent('end', $event)"
+                    @finish="consoleEvent('finish', $event)"
+                    @visibility-hidden="consoleEvent('visibility-hidden', $event)"
+                    @visibility-visible="consoleEvent('visibility-visible', $event)"
+                >
+                    <template v-slot="props">
+                        <span class="hours" v-text="props.hours" />
+                        <span class="separator">:</span>
+                        <span class="minutes" v-text="props.minutes" />
+                        <span class="separator">:</span>
+                        <span class="seconds" v-text="props.seconds" />
+                    </template>
+                </VueCountdownTimer>
+                <div class="btns">
+                    <button @click="pause">pause</button>
+                    <button @click="continueCount">continue</button>
+                </div>
+            </div>
+        </script>
+    </head>
+
+    <body>
+        <div id="app"></div>
+        <script src="./vue-countdown-timer.js"></script>
+        <script>
+            Vue.component('VueCountdownTimer', VueCountdownTimer);
+            new Vue({
+                template: '#template',
+                el: '#app',
+                data() {
+                    return {
+                        events: {
+                            visibilityVisible: true,
+                            visibilityHidden: true,
+                        },
+                    };
+                },
+                methods: {
+                    transform(props) {
+                        Object.entries(props).forEach(([key, value]) => {
+                            props[key] = value < 10 ? `0${value}` : value;
+                        });
+                        return props;
+                    },
+                    start() {
+                        this.$refs.countdown.start();
+                    },
+                    abort() {
+                        this.$refs.countdown.abort();
+                    },
+                    pause() {
+                        this.$refs.cxlCountdown.pause();
+                    },
+                    continueCount() {
+                        this.$refs.cxlCountdown.continue();
+                    },
+                    consoleEvent(evtName, props) {
+                        console.log(evtName, props);
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>

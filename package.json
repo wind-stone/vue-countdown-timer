@@ -1,0 +1,56 @@
+{
+    "name": "vue-countdown-timer",
+    "version": "0.1.0",
+    "description": "基于 Vue 2.x 的倒计时工具，能解决页面 Tab 切换、页面切换到后台、iOS Webview 页面滚动等导致的倒计时暂停问题。",
+    "main": "dist/vue-countdown-timer.umd.js",
+    "module": "dist/vue-countdown-timer.esm.js",
+    "directories": {
+        "example": "example"
+    },
+    "scripts": {
+        "build": "rollup -c",
+        "lint": "lint-staged"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    },
+    "lint-staged": {
+        "*.{js,vue}": [
+            "eslint --fix",
+            "git add"
+        ]
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wind-stone/vue-countdown-timer.git"
+    },
+    "keywords": [
+        "vue",
+        "countdown",
+        "timer"
+    ],
+    "author": "wind-stone",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/wind-stone/vue-countdown-timer/issues"
+    },
+    "homepage": "https://github.com/wind-stone/vue-countdown-timer#readme",
+    "devDependencies": {
+        "@babel/core": "^7.9.0",
+        "@commitlint/cli": "^8.3.5",
+        "@commitlint/config-conventional": "^8.3.4",
+        "babel-eslint": "^10.1.0",
+        "change-case": "^4.1.1",
+        "eslint": "^6.8.0",
+        "eslint-config-windstone-vue": "^0.1.1",
+        "eslint-plugin-vue": "^6.2.2",
+        "husky": "^4.2.5",
+        "lint-staged": "^10.1.7",
+        "rollup": "^2.7.2",
+        "rollup-plugin-babel": "^4.4.0",
+        "vue-eslint-parser": "^7.0.0"
+    }
+}
