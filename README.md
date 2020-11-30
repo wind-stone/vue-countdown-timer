@@ -1,12 +1,32 @@
 # vue-countdown-timer
 
-基于 Vue 2.x 的倒计时工具，能解决页面 Tab 切换、页面切换到后台、iOS Webview 页面滚动等导致的倒计时暂停问题。
+基于 Vue 2.x 的倒计时工具，能解决如下情况导致的倒计时暂停问题:
+
+- 页面 Tab 切换
+- 最小化浏览器
+- 浏览器切换到后台
+- 锁屏
+- iOS Webview 页面滚动
 
 此外，该工具的特点还有：
 
 - 基于 requestAnimationFrame 的倒计时，能让倒计时更加精准。
 - 支持手动暂停/恢复倒计时功能。
   - TODO: 手动暂停倒计时再恢复后，在最后一个`interval`要向上取完整的一个`interval`时间。
+
+## 背景
+
+在浏览器里，若标签不是当前激活标签，则该标签页面里的定时器延迟执行的最小时间间隔是 1000ms，其目的是为了优化后台页面的加载损耗以及降低耗电量。
+
+而实际上，若标签不是当前激活标签，则该标签页面里的定时器将暂停执行，直到标签再次激活。
+
+### requestAnimationFrame
+
+使用`requestAnimationFrame`不需要指定执行回调函数的延迟时间，浏览器会在下一次重绘之前执行指定的回调函数。因此，浏览器可以保证在每个刷新间隔内只执行一次回调函数。
+
+在大多数浏览器里，当`requestAnimationFrame`运行在后台标签页或者隐藏的`<iframe>`里时，`requestAnimationFrame`会被暂停调用以提升性能和电池寿命。
+
+`requestAnimationFrame`的回调函数会被传入 DOMHighResTimeStamp 参数，DOMHighResTimeStamp 指示当前被`requestAnimationFrame`排序的回调函数被触发的时间。**在同一个帧中的多个回调函数，它们每一个都会接受到一个相同的时间戳，即使在计算上一个回调函数的工作负载期间已经消耗了一些时间**。该时间戳是一个十进制数，单位毫秒，最小精度为 1 ms(1000 μs)。
 
 ## 使用
 
