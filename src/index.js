@@ -8,7 +8,7 @@
  * 兼容性说明
  * - requestAnimationFrame 的兼容性：Android 4.4+ 和 iOS 7+ 完全支持
  */
-import {
+ import {
     VISIBILITY_STATE,
     VISIBILITY_CHANGE,
 
@@ -280,6 +280,7 @@ export default {
                 return;
             }
 
+            // 经过多久要执行一次 _minus
             const delay = Math.min(this.totalMilliseconds, this.interval);
 
             if (delay > 0) {
@@ -289,8 +290,19 @@ export default {
                 const step = () => {
                     times++;
                     const now = getCurrentTime();
+                    // 因为主线程中其他任务执行可能会导致 raf 的每次执行间隔边长，这里计算一下 raf 的平均执行间隔
+                    // now - init 是指当前距离上一次执行 _minus 的时间间隔
+                    // times 是指 now - init 时间里 raf 执行了多少次
                     const averageFrameTime = (now - init) / times;
-                    if (now - init >= delay - averageFrameTime / 2) {
+
+                    // 假设 averageFrameTime = 16ms
+                    // 如果此次距离下次执行 _minus 还剩 7ms，则立即进行 _minus
+                    // 如果此次距离下次执行 _minus 还剩 9ms，则此次 raf 回调里不执行 _minus，在下个 raf 回调里再执行 _minus
+                    // 这里这么做的原因是，如果是以 1000ms 来倒计时，需要每次倒计时固定的减 1000ms（否则就有可能因为误差出现连续两次秒数是相同的情况），而 raf 无法精确地做到正好达到 1000ms，所以必须有个判断条件来控制在什么时候去发送 count 事件。
+                    // 如果用 now - init >= delay，每次都是超过 delay 来发送 count 事件，但实际只减去了 delay，误差会越来越大
+                    // 如果用 Math.abs(delay - (now - init)) < averageFrameTime，会比 now - init >= delay 误差更大
+                    // 经过实践证明，采用如下的判断方式，误差最小
+                    if (delay - (now - init) <= averageFrameTime / 2) {
                         this._minus();
                     } else {
                         this.timer = requestAnimationFrame(step);
